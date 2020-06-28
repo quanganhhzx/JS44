@@ -1,17 +1,17 @@
-.register-container{
-  background: url(../images/register-background.jpg);
+.login-container{
+  background: url(../images/login-background.jpg);
   height: 100vh;
   background-size: cover;
   display: flex;
   justify-content: flex-end;
 }
-.register-container .register-form{
+.login-container .login-form{
   width: 400px;
   height: 100vh;
   background: #ffffff;
   padding: 20px;
 }
-.register-form .title{
+.login-form .title{
   text-align: center;
   font-size: 38px;
   color: #757575;
@@ -19,18 +19,25 @@
   padding-top: 20px;
   padding-bottom: 20px;
 }
-.register-form .input-wrapper{
+.login-form .input-wrapper{
   margin-bottom: 10px;
 }
 .name-wrapper .input-wrapper input{
   width: 98%;
 }
-.register-form .name-wrapper{
+.login-form .name-wrapper{
   display: flex;
   justify-content: space-between;
 }
-.register-form .submit-wrapper{
+.login-form .submit-wrapper{
   margin-top: 20px;
   display: flex;
   justify-content: space-between;
+}
+#logoutBtn{
+  padding: 5px 10px;
+  background: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
