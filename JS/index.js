@@ -27,10 +27,6 @@ window.onload = () => {
   });
   console.log(firebase.app().name)
   console.log('loaded!')
-  // view.setActiveScreen('registerScreen')
-  // view.setActiveScreen('loginScreen')
-
-  // templateQueryDatabase()
 }
 
 templateQueryDatabase = () => {
@@ -55,10 +51,6 @@ templateQueryDatabase = () => {
     email: 'duongkx@gmail.com',
     phoneNumber: ['01233434343']
   }
-
-  // firebase.firestore().collection('users').add(dataToCreate).then(res => {
-  //   alert('added!')
-  // })
   // update
   const docIdUpdate = 'B56BnDlsvdMoQvq5Z71I'
   const dataToUpdate = {

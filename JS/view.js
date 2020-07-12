@@ -51,7 +51,6 @@ view.setActiveScreen = (screenName) => {
                         content: sendMessageForm.message.value,
                         createdAt: new Date().toISOString()
                     }
-                    // view.addMessage(message)
                     model.addMessage(message)
                 } else {
                     // alert('blank message?')
@@ -110,30 +109,21 @@ view.addMessage = (message) => {
     listMessage.scrollTop = listMessage.scrollHeight;
 }
 
-
-
-
 view.showCurrentConversation = () => {
     document.querySelector('.list-message').innerHTML = ''
     for (let oneMessage of model.currentConversation.messages) {
         view.addMessage(oneMessage)
     }
-    // console.log('duong')
-    // console.log(model.currentConversation)
     document.querySelector('.main .conversation-title').innerHTML = model.currentConversation.title
-
     view.showCurrentConversationUsers(model.currentConversation)
 }
 
 view.showConversation = () => {
-    document.querySelector('.list-conversations').innerHTML = '' //20200711 - Duong - refresh list after sign out and sign back in
+    document.querySelector('.list-conversations').innerHTML = '' 
     for (oneConversation of model.conversations) {
         view.addConversation(oneConversation)
     }
-
-
 }
-
 view.addConversation = (conversation) => {
     const conversationWrapper = document.createElement('div')
     conversationWrapper.classList.add('conversation')
@@ -149,7 +139,6 @@ view.addConversation = (conversation) => {
         conversationWrapper.classList.add('current')
         model.changeCurrentConversation(conversation.id)
     })
-
     document.querySelector('.list-conversations').appendChild(conversationWrapper)
 }
 
@@ -165,10 +154,7 @@ view.backToChatScreen = () => {
                 content: sendMessageForm.message.value,
                 createdAt: new Date().toISOString()
             }
-            // view.addMessage(message)
             model.addMessage(message)
-        } else {
-            // alert('blank message?')
         }
     })
 
@@ -180,7 +166,6 @@ view.backToChatScreen = () => {
     view.showCurrentConversation()
 }
 
-
 view.showCurrentConversationUsers = (users) => {
     document.querySelector('.list-users').innerHTML = ''
     for (oneUser of model.currentConversation.users) {
@@ -190,10 +175,7 @@ view.showCurrentConversationUsers = (users) => {
 
 view.showUser = (user) => {
     const userWrapper = document.createElement('div')
-
     userWrapper.innerHTML = `
-        <p class ="email">${user}</p>
-        
-    `
+        <p class ="email">${user}</p>`
     document.querySelector('.list-users').appendChild(userWrapper)
 }

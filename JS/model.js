@@ -23,7 +23,6 @@ model.login = (email, password) => {
         .then((user) => {
             console.log(user)
             if (user.user.emailVerified) {
-                // model.currentUser = user.user
                 model.currentUser = {
                     displayName: user.user.displayName,
                     email: user.user.email
@@ -52,8 +51,6 @@ model.loadConversations = () => {
             }
 
             view.showConversation()
-            // console.log(data);
-
         })
 }
 
@@ -77,10 +74,7 @@ model.listenConversationChange = () => {
                 isFirstRun = true
                 return
             }
-            // console.log(res)
             const docChanges = res.docChanges()
-            // console.log(docChanges)
-
             for (oneChange of docChanges) {
                 const type = oneChange.type
                 console.log(type)
@@ -98,7 +92,6 @@ model.listenConversationChange = () => {
                             model.conversations[i] = oneChangeData
                         }
                     }
-                    // console.log(model.conversations)
                 }
 
                 else if (type === 'added') {
@@ -109,26 +102,14 @@ model.listenConversationChange = () => {
         })
 }
 
-
 model.changeCurrentConversation = (conversationId) => {
-    // for (conversation of model.conversations) {
-    //     if (conversation.id === conversationId) {
-    //         model.currentConversation = conversation
-    //     }
-    // }
-
-    model.currentConversation = model.conversations
+ model.currentConversation = model.conversations
         .filter(item => item.id === conversationId)[0]
     console.log(model.currentConversation)
     view.showCurrentConversation()
 }
 
 model.createConversation = (conversation) => {
-
     firebase.firestore().collection(model.collectionName).add(conversation)
     view.backToChatScreen()
-
 }
-
-
-
