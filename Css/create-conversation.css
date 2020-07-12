@@ -1,0 +1,24 @@
+.create-conversation-wrapper{
+    height:100vh;
+}
+
+.main{
+    width: 60%;
+    margin: auto;  
+}
+.input-wrapper{
+    margin-bottom: 10px;
+}
+#back-to-chat{
+    padding: 7px 15px;
+    color: #007bff;
+    background: #ffff;
+    border-radius: 5px;
+    border: 1px solid #007bff;
+    cursor: pointer;
+}
+#back-to-chat:hover{
+    background: #007bff;
+    color: white;
+    outline: none;
+}

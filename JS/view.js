@@ -1,57 +1,199 @@
-
 const view = {}
+
 view.setActiveScreen = (screenName) => {
-  switch (screenName) {
-    case 'registerScreen' :
-      document.getElementById('app').innerHTML = components.registerScreen
-      const registerForm = document.getElementById('form-register')
-      registerForm.addEventListener('submit', (e) =>{
-        e.preventDefault()
-        const registerInfo = {
-          firstName: registerForm.firstName.value,
-          lastName: registerForm.lastName.value,
-          email: registerForm.email.value,
-          password: registerForm.password.value,
-          confirmPassword: registerForm.confirmPassword.value,
-        }
-        controller.register(registerInfo)
-      })
-      //redirect loginScreen when click 
-      const redirectLogin = document.getElementById('redirect-to-login')
-      redirectLogin.addEventListener('click', (e) => {
-        view.setActiveScreen('loginScreen')
-      })
+    document.getElementById('app').innerHTML = components.welcomeScreen
+    switch (screenName) {
+        case 'registerScreen':
+            document.getElementById('app').innerHTML = components.registerScreen
+            const registerForm = document.getElementById('form-register')
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault()
+                const registerInfo = {
+                    firstName: registerForm.firstName.value,
+                    lastName: registerForm.lastName.value,
+                    email: registerForm.email.value,
+                    password: registerForm.password.value,
+                    confirmPassword: registerForm.confirmPassword.value,
+                }
+                controller.register(registerInfo)
+            })
 
-      break;
-    case 'loginScreen':
-      document.getElementById('app').innerHTML = components.loginScreen;
-      const loginForm = document.getElementById('form-login')
-      loginForm.addEventListener('submit', (e) => {
-        e.preventDefault()
-        const email =  loginForm.email.value
-        const password = loginForm.password.value
-        controller.login(email, password)
-      })
-      const redirectRegister = document.getElementById('redirect-to-register')
-      redirectRegister.addEventListener('click', (e) => {
-        view.setActiveScreen('registerScreen')
-      })   
-      break;
-    case 'welcomeScreen':
-      document.getElementById('app').innerHTML = components.welcomeScreen;
-      document.getElementById('welcome').innerHTML = model.currentUser.displayName+" - "+model.currentUser.email;
+            const loginSpan = document.getElementById('redirect-to-login')
+            loginSpan.addEventListener('click', (e) => {
+                view.setActiveScreen('loginScreen')
+            })
+            break
+        case 'loginScreen':
+            document.getElementById('app').innerHTML = components.loginScreen
+            const loginForm = document.getElementById('form-login')
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault()
+                const loginInfo = {
+                    email: loginForm.email.value,
+                    password: loginForm.password.value,
+                }
+                controller.login(loginInfo)
+            })
+            const registerSpan = document.getElementById('redirect-to-register')
+            registerSpan.addEventListener('click', (e) => {
+                view.setActiveScreen('registerScreen')
+            })
+            break
+        case 'chatScreen':
+            document.getElementById('app').innerHTML = components.chatScreen
+            const sendMessageForm = document.querySelector('#sendMessageForm')
+            sendMessageForm.message.focus()
+            sendMessageForm.addEventListener('submit', (e) => {
+                e.preventDefault()
+                if (sendMessageForm.message.value.trim()) {
+                    const message = {
+                        owner: model.currentUser.email,
+                        content: sendMessageForm.message.value,
+                        createdAt: new Date().toISOString()
+                    }
+                    // view.addMessage(message)
+                    model.addMessage(message)
+                } else {
+                    // alert('blank message?')
+                }
+            })
 
-      var logoutBtn = document.getElementById("logoutBtn")
-      logoutBtn.addEventListener('click', (e)=>{
-        e.preventDefault()
-        firebase.auth().signOut();
-        view.setActiveScreen('loginScreen');
-        alert("Your are logged out");
-      });
-      break;
-  }
+            document.getElementById('new-conversation')
+                .addEventListener('click', () => {
+                    view.setActiveScreen('createConversationScreen')
+                })
+            model.loadConversations()
+            model.listenConversationChange()
+            break
+        case 'createConversationScreen':
+            document.getElementById('app').innerHTML = components.createConversationScreen
+            document.getElementById('back-to-chat').addEventListener('click', () => {
+                view.backToChatScreen()
+            })
+            const createConversationForm = document.getElementById('create-conversation-form')
+            createConversationForm.addEventListener('submit', (e) => {
+                e.preventDefault()
+                const data = {
+                    title: createConversationForm.title.value,
+                    friendEmail: createConversationForm.email.value
+                }
+                controller.createConversation(data)
+            })
+            break
+    }
 }
 
-view.setErrorMessage = (elementId, message) => {
-  document.getElementById(elementId).innerHTML = message;
+view.setErrorMessage = (id, message) => {
+    document.getElementById(id).innerText = message
+}
+
+view.addMessage = (message) => {
+    const messageWrapper = document.createElement('div')
+    messageWrapper.classList.add('message')
+    if (message.owner === model.currentUser.email) {
+        messageWrapper.classList.add('mine')
+        messageWrapper.innerHTML = `
+        <div class="content">${message.content}</div>
+        `
+    } else {
+        messageWrapper.classList.add('their')
+        messageWrapper.innerHTML = `
+        <div class="owner">${message.owner}</div>
+        <div class="content">${message.content}</div>
+        `
+    }
+    sendMessageForm.message.value = ''
+    const listMessage = document.querySelector('.list-message')
+
+
+    document.querySelector(".list-message").appendChild(messageWrapper);
+    listMessage.scrollTop = listMessage.scrollHeight;
+}
+
+
+
+
+view.showCurrentConversation = () => {
+    document.querySelector('.list-message').innerHTML = ''
+    for (let oneMessage of model.currentConversation.messages) {
+        view.addMessage(oneMessage)
+    }
+    // console.log('duong')
+    // console.log(model.currentConversation)
+    document.querySelector('.main .conversation-title').innerHTML = model.currentConversation.title
+
+    view.showCurrentConversationUsers(model.currentConversation)
+}
+
+view.showConversation = () => {
+    document.querySelector('.list-conversations').innerHTML = '' //20200711 - Duong - refresh list after sign out and sign back in
+    for (oneConversation of model.conversations) {
+        view.addConversation(oneConversation)
+    }
+
+
+}
+
+view.addConversation = (conversation) => {
+    const conversationWrapper = document.createElement('div')
+    conversationWrapper.classList.add('conversation')
+    if (conversation.id === model.currentConversation.id) {
+        conversationWrapper.classList.add('current')
+    }
+    conversationWrapper.innerHTML = `
+        <div class ="conversation-title">${conversation.title}</div>
+        <div class ="conversation-num-users">${conversation.users.length} users</div>
+    `
+    conversationWrapper.addEventListener('click', () => {
+        document.querySelector('.current').classList.remove('current')
+        conversationWrapper.classList.add('current')
+        model.changeCurrentConversation(conversation.id)
+    })
+
+    document.querySelector('.list-conversations').appendChild(conversationWrapper)
+}
+
+view.backToChatScreen = () => {
+    document.getElementById('app').innerHTML = components.chatScreen
+    const sendMessageForm = document.querySelector('#sendMessageForm')
+    sendMessageForm.message.focus()
+    sendMessageForm.addEventListener('submit', (e) => {
+        e.preventDefault()
+        if (sendMessageForm.message.value.trim()) {
+            const message = {
+                owner: model.currentUser.email,
+                content: sendMessageForm.message.value,
+                createdAt: new Date().toISOString()
+            }
+            // view.addMessage(message)
+            model.addMessage(message)
+        } else {
+            // alert('blank message?')
+        }
+    })
+
+    document.getElementById('new-conversation')
+        .addEventListener('click', () => {
+            view.setActiveScreen('createConversationScreen')
+        })
+    view.showConversation()
+    view.showCurrentConversation()
+}
+
+
+view.showCurrentConversationUsers = (users) => {
+    document.querySelector('.list-users').innerHTML = ''
+    for (oneUser of model.currentConversation.users) {
+        view.showUser(oneUser)
+    }
+}
+
+view.showUser = (user) => {
+    const userWrapper = document.createElement('div')
+
+    userWrapper.innerHTML = `
+        <p class ="email">${user}</p>
+        
+    `
+    document.querySelector('.list-users').appendChild(userWrapper)
 }
