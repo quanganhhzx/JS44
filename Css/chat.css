@@ -7,7 +7,7 @@
 
 .chat-container .main {
   height: 100%;
-  width: 50%;
+  width: 60%;
   flex-grow: 1;
 }
 
@@ -85,7 +85,10 @@
 .chat-container .aside-left {
   border-right: 1px solid #dbdbdb;
   font-size: 14px;
-  width: 15%;
+  width: 20%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chat-container .conversation {
@@ -107,16 +110,33 @@
 .aside-right{
   border-left: 1px solid #dbdbdb;
   padding: 10px;
+  width: 20%;
 }
 .list-users{
   margin-bottom: 10px;
 }
 .list-users p {
   margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #addEmailForm .input-wrapper{
   margin-bottom: 10px;
 }
 .input-wrapper input{
   outline: none;
+}
+.conversation{
+  position: relative;
+}
+.conversation-notify{
+  width: 15px;
+    height: 15px;
+    background: #027bfd;
+    border-radius: 50%;
+    position: absolute;
+    top: 30%;
+    right: 20px;
+    display: none;
 }

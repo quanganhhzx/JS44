@@ -48,7 +48,7 @@ templateQueryDatabase = () => {
   const dataToCreate = {
     name: 'Create',
     age: 18,
-    email: 'duongkx@gmail.com',
+    email: 'quanganh@gmail.com',
     phoneNumber: ['01233434343']
   }
   // update

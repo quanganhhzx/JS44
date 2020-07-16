@@ -44,12 +44,10 @@ model.loadConversations = () => {
         .then(res => {
             const data = utils.getDataFromDocs(res.docs)
             model.conversations = data
-
             if (data.length > 0) {
                 model.currentConversation = data[0]
                 view.showCurrentConversation()
             }
-
             view.showConversation()
         })
 }
@@ -82,14 +80,26 @@ model.listenConversationChange = () => {
                 console.log(oneChangeData);
                 if (type === 'modified') {
                     if (oneChangeData.id === model.currentConversation.id) {
+                        //neu nhu la them tin nhan moi
+                        if(oneChangeData.users.length === model.currentConversation.users.length){
+                            view.addMessage(oneChangeData.messages[oneChangeData.messages.length - 1])
+
+                        }else{
+                            //them user moi
+                            view.showUser(oneChangeData.users[oneChangeData.users.length - 1])
+                        }
                         model.currentConversation = oneChangeData
-                        view.addMessage(oneChangeData.messages[oneChangeData.messages.length - 1])
+
                     }
 
                     for (let i = 0; i < model.conversations.length; i++) {
                         const element = model.conversations[i]
                         if (element.id === oneChangeData.id) {
                             model.conversations[i] = oneChangeData
+                            if(oneChangeData.messages[oneChangeData.messages.length - 1].owner !== model.currentUser.email){
+                            view.showNotify(oneChangeData.id)
+
+                            }
                         }
                     }
                 }
@@ -97,6 +107,8 @@ model.listenConversationChange = () => {
                 else if (type === 'added') {
                     model.conversations.push(oneChangeData)
                     view.addConversation(oneChangeData)
+                    view.showNotify(oneChangeData.id)
+
                 }
             }
         })
@@ -112,4 +124,10 @@ model.changeCurrentConversation = (conversationId) => {
 model.createConversation = (conversation) => {
     firebase.firestore().collection(model.collectionName).add(conversation)
     view.backToChatScreen()
+}
+model.addUser = (email) =>{
+    const dataToUpdate = {
+        users: firebase.firestore.FieldValue.arrayUnion(email)
+    }
+    firebase.firestore().collection(model.collectionName).doc(model.currentConversation.id).update(dataToUpdate)
 }

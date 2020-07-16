@@ -63,6 +63,15 @@ view.setActiveScreen = (screenName) => {
                 })
             model.loadConversations()
             model.listenConversationChange()
+            const addUserForm = document.querySelector('#addEmailForm')
+            addUserForm.addEventListener('submit', (e)=>{
+              e.preventDefault()
+              controller.addUser(addUserForm.email.value)
+              addUserForm.email.value=''
+            })
+            document.querySelector('#sendMessageForm input').addEventListener('click', () =>{
+                document.getElementById(model.currentConversation.id).lastElementChild.style ="display:none"
+            })
             break
         case 'createConversationScreen':
             document.getElementById('app').innerHTML = components.createConversationScreen
@@ -127,17 +136,20 @@ view.showConversation = () => {
 view.addConversation = (conversation) => {
     const conversationWrapper = document.createElement('div')
     conversationWrapper.classList.add('conversation')
+    conversationWrapper.id = conversation.id
     if (conversation.id === model.currentConversation.id) {
         conversationWrapper.classList.add('current')
     }
     conversationWrapper.innerHTML = `
         <div class ="conversation-title">${conversation.title}</div>
         <div class ="conversation-num-users">${conversation.users.length} users</div>
+        <div class ="conversation-notify"></div>
     `
     conversationWrapper.addEventListener('click', () => {
         document.querySelector('.current').classList.remove('current')
         conversationWrapper.classList.add('current')
         model.changeCurrentConversation(conversation.id)
+        conversationWrapper.lastElementChild.style= 'display:none'
     })
     document.querySelector('.list-conversations').appendChild(conversationWrapper)
 }
@@ -164,6 +176,12 @@ view.backToChatScreen = () => {
         })
     view.showConversation()
     view.showCurrentConversation()
+    const addUserForm = document.querySelector('#addEmailForm')
+    addUserForm.addEventListener('submit', (e)=>{
+      e.preventDefault()
+      controller.addUser(addUserForm.email.value)
+      addUserForm.email.value=''
+    })
 }
 
 view.showCurrentConversationUsers = (users) => {
@@ -179,3 +197,9 @@ view.showUser = (user) => {
         <p class ="email">${user}</p>`
     document.querySelector('.list-users').appendChild(userWrapper)
 }
+view.showNotify= (conversationId) => {
+    const conversation = document.getElementById(conversationId)
+    conversation.lastElementChild.style = 'display:block'
+
+}
+    
